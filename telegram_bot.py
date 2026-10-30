@@ -1,6 +1,10 @@
 import io
+import json
 import logging
+import os
 import sys
+import threading
+from http.server import HTTPServer, BaseHTTPRequestHandler
 from telegram import Update
 from telegram.constants import ChatAction, ParseMode
 from telegram.ext import (
@@ -31,6 +35,43 @@ logger = logging.getLogger(__name__)
 agent: WasteClassifierAgent = None
 
 
+# -----------------------------------------------------------------------------
+# Micro-servidor HTTP para Render Web Service (Plan GRATUITO $0)
+# -----------------------------------------------------------------------------
+class HealthCheckHandler(BaseHTTPRequestHandler):
+    """Responde 200 OK a los pings de Render para validar que el servicio está vivo."""
+    def do_GET(self):
+        self.send_response(200)
+        self.send_header("Content-Type", "application/json; charset=utf-8")
+        self.end_headers()
+        body = json.dumps({
+            "status": "online",
+            "bot": "EcoGuide-IA",
+            "mode": "Telegram Polling 24/7",
+            "provider": "Render Free Web Service"
+        })
+        self.wfile.write(body.encode("utf-8"))
+
+    def log_message(self, format, *args):
+        # Silenciar logs recurrentes de healthcheck
+        return
+
+
+def start_health_server():
+    """Inicia el servidor HTTP en un hilo demonio para el puerto asignado por Render."""
+    port = int(os.environ.get("PORT", "10000"))
+    try:
+        server = HTTPServer(("0.0.0.0", port), HealthCheckHandler)
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        logger.info(f"✅ Micro-servidor web activo en el puerto {port} (compatible con Render Free Web Service)")
+    except Exception as e:
+        logger.warning(f"No se pudo iniciar el micro-servidor web (no crítico en local): {e}")
+
+
+# -----------------------------------------------------------------------------
+# Handlers del Bot de Telegram
+# -----------------------------------------------------------------------------
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Mensaje de bienvenida y explicación del bot."""
     welcome_text = (
@@ -41,7 +82,7 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "No necesitas escribir nada; la inteligencia artificial examinará la imagen y determinará la caneca correcta por sí sola:\n\n"
         "⚪ *Caneca Blanca:* Aprovechables limpios (plástico, vidrio, latas, cartón)\n"
         "🟢 *Caneca Verde:* Orgánicos (restos de comida, cáscaras, borra de café)\n"
-        "⚫ *Caneca Negra:* No aprovechables (servilletas usadas, cajas de pizza engrasadas, mecatos)\n"
+        "⚫ *Caneca Negra:* No aprovechables (servilletas usadas, cajas de pizza engrasadas, mecatos, pelotas inservibles)\n"
         "🔴 *Punto Especial:* Pilas, medicamentos o bombillos\n\n"
         "¡Envía tu foto ahora!"
     )
@@ -55,7 +96,7 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "1. Toma una foto clara del residuo o basura.\n"
         "2. Envíala a este chat.\n"
         "3. No necesitas escribir nada. La IA detectará:\n"
-        "   • Qué residuo es.\n"
+        "   • Qué residuo u objeto es.\n"
         "   • Si está limpio o contaminado con grasa/comida.\n"
         "   • En qué caneca depositarlo y cómo prepararlo (ej: enjuagar)."
     )
@@ -111,7 +152,10 @@ async def handle_non_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
 def main():
     global agent
 
-    # 1. Validar variables requeridas
+    # 1. Iniciar micro-servidor de healthcheck para Render Free Web Service
+    start_health_server()
+
+    # 2. Validar variables requeridas
     if not config.TELEGRAM_BOT_TOKEN:
         print("\n" + "=" * 60)
         print("❌ FALTA CONFIGURAR EL TOKEN DE TELEGRAM")
@@ -125,7 +169,7 @@ def main():
     print("🤖 Iniciando Agente EcoGuide para Telegram...")
     agent = WasteClassifierAgent()
 
-    # 2. Configurar la aplicación de Telegram
+    # 3. Configurar la aplicación de Telegram
     app = ApplicationBuilder().token(config.TELEGRAM_BOT_TOKEN).build()
 
     app.add_handler(CommandHandler("start", start_command))

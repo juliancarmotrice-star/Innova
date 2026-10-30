@@ -22,3 +22,4 @@ tests/test_images/*.png
 *.swp
 Thumbs.db
 .DS_Store
+
