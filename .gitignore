@@ -1,0 +1,24 @@
+# Variables de entorno y credenciales (CRÍTICO: nunca subir a git)
+.env
+
+# Python bytecode y caché
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Entornos virtuales
+venv/
+env/
+.venv/
+
+# Imágenes temporales de pruebas
+tests/test_images/*.jpg
+tests/test_images/*.png
+
+# IDE y sistema operativo
+.idea/
+.vscode/
+*.swp
+Thumbs.db
+.DS_Store
