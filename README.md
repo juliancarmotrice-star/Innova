@@ -4,6 +4,19 @@ Agente de Inteligencia Artificial Multimodal (Visión + Razonamiento) diseñado 
 
 ---
 
+### 📲 Prueba el Bot en Telegram
+
+Escanea el código QR desde tu celular o accede directamente al enlace para interactuar con el bot:
+
+<p align="center">
+  <a href="https://t.me/Eco_21bot">
+    <img src="assets/qr_telegram_bot.png" width="220" alt="Código QR EcoGuide Telegram Bot" /><br/>
+    <b>👉 @Eco_21bot (t.me/Eco_21bot)</b>
+  </a>
+</p>
+
+---
+
 ## 🎨 Código de Colores Soportado
 
 | Caneca | Tipo de Residuo | Materiales Típicos | Condición Clave |
@@ -19,14 +32,17 @@ Agente de Inteligencia Artificial Multimodal (Visión + Razonamiento) diseñado 
 
 ```text
 INNOVA/
-├── config.py              # Gestión centralizada de configuración y variables de entorno
-├── schemas.py             # Modelos de datos Pydantic y formateador de mensajes
-├── waste_agent.py         # Motor del Agente Multimodal con Google Gemini Vision
-├── telegram_bot.py        # Bot de Telegram conectado al Agente de IA
-├── test_agent.py          # Script de pruebas CLI para validar el agente con imágenes
-├── requirements.txt       # Dependencias del proyecto
-├── .env.example           # Plantilla para variables de entorno (API Keys)
-└── README.md              # Documentación técnica
+├── assets/
+│   └── qr_telegram_bot.png  # Código QR de acceso directo al bot de Telegram
+├── config.py                # Gestión centralizada de configuración y variables de entorno
+├── schemas.py               # Modelos de datos Pydantic y formateador de mensajes
+├── waste_agent.py           # Motor del Agente Multimodal con Google Gemini Vision
+├── telegram_bot.py          # Bot de Telegram conectado al Agente de IA (+ micro-servidor web)
+├── Procfile                 # Configuración de despliegue en la nube (Render)
+├── test_agent.py            # Script de pruebas CLI para validar el agente con imágenes
+├── requirements.txt         # Dependencias del proyecto
+├── .env.example             # Plantilla para variables de entorno (API Keys)
+└── README.md                # Documentación técnica
 ```
 
 ---
@@ -51,7 +67,7 @@ Edita `.env` con tus credenciales:
 GEMINI_API_KEY=tu_api_key_de_gemini
 
 # Modelo recomendado por velocidad y precisión multimodal:
-GEMINI_MODEL=gemini-2.5-flash
+GEMINI_MODEL=gemini-3.5-flash-lite
 
 # Obtén tu token de bot en Telegram con @BotFather:
 TELEGRAM_BOT_TOKEN=tu_token_de_telegram
@@ -71,7 +87,7 @@ Si no especificas una foto, el script generará automáticamente una muestra sin
 
 ---
 
-## 📲 Ejecutar el Bot de Telegram
+## 📲 Ejecutar el Bot de Telegram Localmente
 
 Una vez configurado `TELEGRAM_BOT_TOKEN`:
 
@@ -79,9 +95,10 @@ Una vez configurado `TELEGRAM_BOT_TOKEN`:
 python telegram_bot.py
 ```
 
-1. Abre tu bot en Telegram y envía `/start`.
-2. Toma una foto con la cámara de tu celular a cualquier residuo (por ejemplo, una cáscara de fruta, un vaso sucio, una botella plástica o una pila).
-3. El agente responderá en segundos con:
+1. Abre tu bot en Telegram: [@Eco_21bot](https://t.me/Eco_21bot).
+2. Envía `/start`.
+3. Toma una foto con la cámara de tu celular a cualquier residuo (por ejemplo, una cáscara de fruta, un vaso sucio, una botella plástica o una pila).
+4. El agente responderá en segundos con:
    - Nombre del residuo y material detectado.
    - Estado de limpieza/contaminación.
    - Caneca correspondiente con emoji y color.
