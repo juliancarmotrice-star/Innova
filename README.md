@@ -34,7 +34,8 @@ Escanea el código QR desde tu celular o accede directamente al enlace para inte
 INNOVA/
 ├── assets/
 │   ├── qr_telegram_bot.png        # Código QR de acceso directo al bot de Telegram
-│   ├── arquitectura-ecoguide.png  # Diagrama de arquitectura del sistema en PNG
+│   ├── arquitectura-ecoguide.png  # Diagrama de arquitectura en Ultra HD (5574x2464)
+│   ├── arquitectura-ecoguide.svg  # Diagrama vectorial escalable (SVG)
 │   └── arquitectura-ecoguide.html # Diagrama interactivo de arquitectura (Archify)
 ├── config.py                      # Gestión centralizada de configuración y variables de entorno
 ├── schemas.py               # Modelos de datos Pydantic y formateador de mensajes
@@ -117,4 +118,7 @@ Diagrama de flujo y componentes generado con **Archify**:
   <img src="assets/arquitectura-ecoguide.png" alt="Arquitectura del Sistema EcoGuide" width="900" />
 </p>
 
-*Para interactuar con el diagrama y explorar los componentes detallados, abre el [diagrama interactivo en HTML](assets/arquitectura-ecoguide.html).*
+*Formatos disponibles:*
+- 🖼️ **Ultra HD PNG**: [`assets/arquitectura-ecoguide.png`](assets/arquitectura-ecoguide.png) *(5574 x 2464 px, calidad perfecta para presentaciones e informes)*
+- 📐 **Vectorial SVG**: [`assets/arquitectura-ecoguide.svg`](assets/arquitectura-ecoguide.svg) *(escalabilidad infinita sin pérdida)*
+- 🌐 **Interactivo HTML**: [`assets/arquitectura-ecoguide.html`](assets/arquitectura-ecoguide.html) *(exploración interactiva en navegador)*
