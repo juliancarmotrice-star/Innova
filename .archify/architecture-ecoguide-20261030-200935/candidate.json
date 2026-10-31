@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "EcoGuide-IA — Arquitectura del Sistema",
+    "subtitle": "Bot de Telegram con Visión Multimodal · Despliegue Gratuito en Render",
+    "output": "assets/arquitectura-ecoguide.html",
+    "quality_profile": "showcase",
+    "locale": "es"
+  },
+  "components": [
+    { "id": "user",            "type": "external",    "label": "Usuario",           "sublabel": "Telegram App · Celular",         "pos": [40,  290], "size": [120, 60] },
+    { "id": "cron",            "type": "external",    "label": "cron-job.org",      "sublabel": "Ping cada 10 min",               "pos": [40,  140], "size": [120, 60] },
+    { "id": "telegram",        "type": "cloud",       "label": "Telegram Servers",  "sublabel": "Bot API · Polling HTTPS",        "pos": [240, 290], "size": [140, 60] },
+    { "id": "github",          "type": "cloud",       "label": "GitHub",            "sublabel": "Innova · Auto-Deploy",           "pos": [240, 140], "size": [140, 60], "tag": "push → deploy" },
+    { "id": "render",          "type": "cloud",       "label": "Render.com",        "sublabel": "Free Web Service · $0/mes",      "pos": [460, 290], "size": [140, 60] },
+    { "id": "health_srv",      "type": "backend",     "label": "Health Server",     "sublabel": "HTTP :PORT · daemon thread",     "pos": [460, 140], "size": [140, 60] },
+    { "id": "bot",             "type": "backend",     "label": "telegram_bot.py",   "sublabel": "python-telegram-bot async",      "pos": [680, 290], "size": [150, 60] },
+    { "id": "config",          "type": "backend",     "label": "config.py",         "sublabel": ".env · API Keys",                "pos": [680, 140], "size": [150, 60] },
+    { "id": "agent",           "type": "backend",     "label": "WasteClassifierAgent", "sublabel": "waste_agent.py",             "pos": [900, 290], "size": [160, 60] },
+    { "id": "optimizer",       "type": "backend",     "label": "Image Optimizer",   "sublabel": "PIL · 800px · JPEG 80%",         "pos": [900, 440], "size": [160, 60] },
+    { "id": "schemas",         "type": "backend",     "label": "schemas.py",        "sublabel": "Pydantic · WasteClassificationResponse", "pos": [900, 140], "size": [160, 60] },
+    { "id": "gemini",          "type": "cloud",       "label": "Google Gemini API", "sublabel": "gemini-3.5-flash-lite (free)",   "pos": [1130, 440], "size": [160, 60], "tag": "Multimodal Vision" }
+  ],
+  "boundaries": [
+    { "kind": "region",         "label": "Render Cloud (Free Tier)",  "wraps": ["render", "health_srv", "bot", "agent", "optimizer", "schemas", "config"] },
+    { "kind": "security-group", "label": "Google Cloud",              "wraps": ["gemini"] }
+  ],
+  "connections": [
+    { "id": "user-photo",       "from": "user",        "to": "telegram",    "label": "envía foto",           "variant": "emphasis" },
+    { "id": "tg-polling",       "from": "telegram",    "to": "render",      "label": "polling HTTPS" },
+    { "id": "render-bot",       "from": "render",      "to": "bot",         "label": "dispatch" },
+    { "id": "bot-agent",        "from": "bot",         "to": "agent",       "label": "classify(bytes)" },
+    { "id": "agent-opt",        "from": "agent",       "to": "optimizer",   "label": "imagen raw",           "fromSide": "bottom", "toSide": "top" },
+    { "id": "opt-gemini",       "from": "optimizer",   "to": "gemini",      "label": "JPEG ~20KB",           "variant": "emphasis" },
+    { "id": "gemini-schemas",   "from": "gemini",      "to": "schemas",     "label": "JSON clasificado",     "toSide": "bottom", "fromSide": "top" },
+    { "id": "schemas-agent",    "from": "schemas",     "to": "agent",       "label": "Response obj",         "fromSide": "bottom", "toSide": "top" },
+    { "id": "agent-bot",        "from": "agent",       "to": "bot",         "label": "resultado",            "variant": "dashed", "fromSide": "left", "toSide": "right" },
+    { "id": "bot-tg",           "from": "bot",         "to": "telegram",    "label": "Markdown reply",       "variant": "emphasis", "fromSide": "left", "toSide": "right" },
+    { "id": "tg-user",          "from": "telegram",    "to": "user",        "label": "🟢/⚫/⚪ caneca",      "variant": "emphasis" },
+    { "id": "config-agent",     "from": "config",      "to": "agent",       "label": "GEMINI_API_KEY",       "variant": "security", "fromSide": "bottom", "toSide": "top" },
+    { "id": "health-ping",      "from": "health_srv",  "to": "render",      "label": "200 OK",               "variant": "dashed",  "fromSide": "bottom", "toSide": "top" },
+    { "id": "github-render",    "from": "github",      "to": "render",      "label": "auto-deploy",          "variant": "dashed" },
+    { "id": "cron-render",      "from": "cron",        "to": "render",      "label": "GET keepalive",        "variant": "dashed" }
+  ],
+  "cards": [
+    { "dot": "cyan",    "title": "Entrada",          "items": ["Usuario envía foto por Telegram sin escribir texto", "Bot API recibe foto en polling HTTPS cada segundo", "cron-job.org mantiene el servidor despierto 24/7 con pings"] },
+    { "dot": "emerald", "title": "Procesamiento IA", "items": ["Image Optimizer reduce la foto de 8 MB a ~20 KB en memoria con PIL", "gemini-3.5-flash-lite (gratuito) clasifica visualmente de forma autónoma", "Failover automático a gemini-3.5-flash si el modelo principal falla", "Pydantic valida y estructura el JSON de respuesta"] },
+    { "dot": "rose",    "title": "Despliegue",       "items": ["Render Free Web Service: $0/mes", "Health Server en hilo demonio satisface el health-check de Render", "GitHub → Auto-Deploy en cada push a main", "Secrets en Render Environment (nunca en el código)"] }
+  ]
+}
