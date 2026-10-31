@@ -33,8 +33,10 @@ Escanea el código QR desde tu celular o accede directamente al enlace para inte
 ```text
 INNOVA/
 ├── assets/
-│   └── qr_telegram_bot.png  # Código QR de acceso directo al bot de Telegram
-├── config.py                # Gestión centralizada de configuración y variables de entorno
+│   ├── qr_telegram_bot.png        # Código QR de acceso directo al bot de Telegram
+│   ├── arquitectura-ecoguide.png  # Diagrama de arquitectura del sistema en PNG
+│   └── arquitectura-ecoguide.html # Diagrama interactivo de arquitectura (Archify)
+├── config.py                      # Gestión centralizada de configuración y variables de entorno
 ├── schemas.py               # Modelos de datos Pydantic y formateador de mensajes
 ├── waste_agent.py           # Motor del Agente Multimodal con Google Gemini Vision
 ├── telegram_bot.py          # Bot de Telegram conectado al Agente de IA (+ micro-servidor web)
@@ -104,3 +106,15 @@ python telegram_bot.py
    - Caneca correspondiente con emoji y color.
    - Paso a seguir inmediato (ej: *"Vaciar líquidos y enjuagar antes de depositar"*).
    - Explicación didáctica y recomendaciones de aprovechamiento.
+
+---
+
+## 🏗️ Arquitectura del Sistema
+
+Diagrama de flujo y componentes generado con **Archify**:
+
+<p align="center">
+  <img src="assets/arquitectura-ecoguide.png" alt="Arquitectura del Sistema EcoGuide" width="900" />
+</p>
+
+*Para interactuar con el diagrama y explorar los componentes detallados, abre el [diagrama interactivo en HTML](assets/arquitectura-ecoguide.html).*
